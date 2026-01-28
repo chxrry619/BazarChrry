@@ -90,6 +90,53 @@ namespace CapaDatos
             return resul;
         }
 
+        public string Editar(CDProducto prod)
+        {
+            string rpta = "";
+
+            try
+            {
+                using (SqlConnection SqlCon = new SqlConnection())
+                {
+                    SqlCon.Open();
+
+                    using (SqlCommand SqlCmd = new SqlCommand("editar_producto", SqlCon))
+                    {
+                        SqlCmd.CommandType = CommandType.StoredProcedure;
+
+                        SqlCmd.Parameters.AddWithValue("@idproducto", prod.Idproducto);
+                        SqlCmd.Parameters.AddWithValue("@codigo", prod.Codigo);
+                        SqlCmd.Parameters.AddWithValue("@nombre", prod.Nombre);
+                        SqlCmd.Parameters.AddWithValue("@descripcion", prod.Descripcion);
+                        SqlCmd.Parameters.AddWithValue("@f_ingreso", prod.F_ingreso);
+
+                        // Fecha de vencimiento puede ser NULL
+                        if (prod.F_vencimiento == DateTime.MinValue)
+                            SqlCmd.Parameters.AddWithValue("@f_vencimiento", DBNull.Value);
+                        else
+                            SqlCmd.Parameters.AddWithValue("@f_vencimiento", prod.F_vencimiento);
+
+                        SqlCmd.Parameters.AddWithValue("@precio_compra", prod.Precio_compra);
+                        SqlCmd.Parameters.AddWithValue("@precio_venta", prod.Precio_venta);
+                        SqlCmd.Parameters.AddWithValue("@stock", prod.Stock);
+                        SqlCmd.Parameters.AddWithValue("@estado", prod.Estado);
+                        SqlCmd.Parameters.AddWithValue("@idcategoria", prod.Idcategoria);
+
+                        rpta = SqlCmd.ExecuteNonQuery() == 1
+                            ? "OK"
+                            : "No se pudo editar el producto";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                rpta = ex.Message;
+            }
+
+            return rpta;
+        }
+
+
 
         public string Guardar(CDProducto prod)
         {
