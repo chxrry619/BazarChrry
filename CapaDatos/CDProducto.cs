@@ -58,6 +58,38 @@ namespace CapaDatos
             return resul;
         }
 
+        public string Eliminar(CDProducto prod)
+        {
+            string resul = "";
+            SqlConnection conexion = new SqlConnection();
+
+            try
+            {
+                conexion.ConnectionString = Conexion.Conn;
+                conexion.Open();
+
+                SqlCommand cmd = new SqlCommand("eliminar_producto", conexion);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@idproducto", prod.Idproducto);
+
+                resul = cmd.ExecuteNonQuery() == 1 ? "Producto eliminado correctamente": "No se pudo eliminar el producto";
+            }
+            catch (Exception ex)
+            {
+                resul = ex.Message;
+            }
+            finally
+            {
+                if (conexion.State == ConnectionState.Open)
+                {
+                    conexion.Close();
+                }
+            }
+
+            return resul;
+        }
+
 
         public string Guardar(CDProducto prod)
         {
@@ -69,7 +101,7 @@ namespace CapaDatos
                 conexion.ConnectionString = Conexion.Conn;
                 conexion.Open();
 
-                SqlCommand cmd = new SqlCommand("insertar_producto", conexion);
+                SqlCommand cmd = new SqlCommand("sp_insertar_producto", conexion);
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@idproducto", prod.Idproducto);
@@ -88,9 +120,7 @@ namespace CapaDatos
                 cmd.Parameters.AddWithValue("@idcategoria", prod.Idcategoria);
 
 
-                resul = cmd.ExecuteNonQuery() == 1
-                    ? "Se pudo añadir el producto correctamente"
-                    : "No se pudo añadir el producto, favor de intentarlo más tarde";
+                resul = cmd.ExecuteNonQuery() == 1 ? "Se pudo añadir el producto correctamente": "No se pudo añadir el producto, favor de intentarlo más tarde";
             }
             catch (Exception ex)
             {
